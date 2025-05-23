@@ -1,19 +1,18 @@
 'use client';
 import { useEffect } from 'react';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useUserStore } from '@/lib/store/userStore';
 import { syncUser } from '@/lib/database/actions/user.actions';
-import SpeechPrepApp from '@/components/dashboard/SpeechPrepApp';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import DashboardHome from '@/components/dashboard/DashboardHome';
+import Profile from '@/components/dashboard/Profile';
 
-export default function HomePage() {
-  const { user, setUser, setLoading, setError } = useUserStore();
+export default function ProfilePage() {
+  const { user, isLoading, error, setUser, setLoading, setError } = useUserStore();
 
-useEffect(() => {
+  useEffect(() => {
     async function fetchAndSyncUser() {
       setLoading(true);
       try {
-        console.log('Attempting to sync user...');
+        console.log('Attempting to sync user in Profile...');
         const result = await syncUser();
         console.log('Sync result:', result);
         if ('error' in result) {
@@ -29,11 +28,10 @@ useEffect(() => {
         setLoading(false);
       }
     }
-    // 仅在 user 不存在时调用，优化性能
     if (!user) {
       fetchAndSyncUser();
     }
   }, [user, setUser, setLoading, setError]);
-   return <DashboardLayout content={user===null?<div> 请登录</div>:<DashboardHome />}/>;
-  
+
+  return <DashboardLayout content={<Profile />} />;
 }
